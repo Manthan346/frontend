@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Tests from './pages/Tests';
 import AdminPage from './pages/Admin';
 import SubjectManagement from './components/admin/SubjectManagement';
+import StudentsMarksPage from './pages/StudentsMarksPage';  // Import the new page here
 import { useAuth } from './hooks/useAuth';
 
 const ProtectedRouteWithRoles = ({ children, roles = [] }) => {
@@ -75,8 +76,16 @@ const App = () => {
         <Route
           path="/tests"
           element={
-            <ProtectedRouteWithRoles roles={['teacher', 'admin']}>
+            <ProtectedRouteWithRoles roles={['teacher', 'admin', 'student']}>
               <Tests />
+            </ProtectedRouteWithRoles>
+          }
+        />
+        <Route
+          path="/my-marks"
+          element={
+            <ProtectedRouteWithRoles roles={['student']}>
+              <StudentsMarksPage />
             </ProtectedRouteWithRoles>
           }
         />

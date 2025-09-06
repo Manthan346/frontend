@@ -1,17 +1,43 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Menu, X, Home, FileText, Settings } from 'lucide-react';
+import { Menu, X, Home, FileText, Settings, BarChart3 } from 'lucide-react';
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const user = JSON.parse(localStorage.getItem('user') || '{}');
-  const isAdmin = user.role === 'admin';
+  const userRole = user.role;
 
-  const links = [
-    { label: 'Dashboard', to: '/dashboard', icon: Home },
-    { label: 'Tests', to: '/tests', icon: FileText },
-    ...(isAdmin ? [{ label: 'Admin', to: '/admin', icon: Settings }] : []),
-  ];
+  // Define links based on user roles
+  const getLinks = () => {
+    const baseLinks = [
+      { label: 'Dashboard', to: '/dashboard', icon: Home }
+    ];
+
+    if (userRole === 'student') {
+      return [
+        ...baseLinks,
+        { label: 'Tests', to: '/tests', icon: FileText },
+        { label: 'My Marks', to: '/my-marks', icon: BarChart3 }
+      ];
+    } else if (userRole === 'teacher') {
+      return [
+        ...baseLinks,
+        { label: 'Tests', to: '/tests', icon: FileText },
+        { label: 'Subjects', to: '/subjects', icon: Settings }
+      ];
+    } else if (userRole === 'admin') {
+      return [
+        ...baseLinks,
+        { label: 'Tests', to: '/tests', icon: FileText },
+        { label: 'Subjects', to: '/subjects', icon: Settings },
+        { label: 'Admin', to: '/admin', icon: Settings }
+      ];
+    }
+
+    return baseLinks;
+  };
+
+  const links = getLinks();
 
   return (
     <>
@@ -29,7 +55,9 @@ const Sidebar = () => {
         } md:translate-x-0`}
       >
         <div className="p-6 border-b border-gray-200 font-bold text-xl">
-          Student Dashboard
+          {userRole === 'admin' ? 'Admin Panel' : 
+           userRole === 'teacher' ? 'Teacher Portal' : 
+           'Student Dashboard'}
         </div>
         <ul className="p-4 space-y-2">
           {links.map(({ label, to, icon: Icon }) => (
@@ -37,7 +65,7 @@ const Sidebar = () => {
               <NavLink
                 to={to}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-2 rounded-md ${
+                  `flex items-center gap-3 px-4 py-2 rounded-md transition-colors ${
                     isActive
                       ? 'bg-blue-100 text-blue-700 font-semibold'
                       : 'text-gray-700 hover:bg-gray-100'
