@@ -1,5 +1,5 @@
 import React from 'react';
-import StudentSignup from '../components/auth/StudentSignup';
+import StudentSignup from '../components/auth/Register';
 
 const Signup = () => <StudentSignup />;
 

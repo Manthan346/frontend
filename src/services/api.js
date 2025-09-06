@@ -1,28 +1,31 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'http://localhost:5000/api',  // Make sure this matches your backend
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,  // Important for CORS
 });
 
-// Add token to every request
-api.interceptors.request.use(config => {
+// Request interceptor
+api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  console.log('Making API request to:', config.baseURL + config.url);
   return config;
 });
 
-// Optional: global response error handling
+// Response interceptor
 api.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/';
-    }
+  (response) => {
+    console.log('API Response:', response.status);
+    return response;
+  },
+  (error) => {
+    console.error('API Error:', error.response?.status, error.message);
     return Promise.reject(error);
   }
 );
